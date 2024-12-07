@@ -98,7 +98,7 @@ func turnRight(direction Direction) (Direction, error) {
 	if sameDirection(direction, West) {
 		return North, nil
 	}
-	return direction, errors.New("Input direction invalid")
+	return direction, errors.New("input direction invalid")
 }
 
 func patrol(area [][]string, blocks ...Position) ([][]int, bool, error) {
@@ -184,7 +184,7 @@ func findGuard(area [][]string) (Position, error) {
 			}
 		}
 	}
-	return Position{}, errors.New("No guard in area")
+	return Position{}, errors.New("no guard in area")
 }
 
 func loadDay6Input(fileName string) [][]string {
