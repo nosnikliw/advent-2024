@@ -15,8 +15,8 @@ import (
 // day8Cmd represents the day8 command
 var day8Cmd = &cobra.Command{
 	Use:   "day8",
-	Short: "Solve day 7",
-	Long: `Solve day 7
+	Short: "Solve day 8",
+	Long: `Solve day 8
 
 Resonant Collinearity`,
 	Args: cobra.RangeArgs(0, 1),

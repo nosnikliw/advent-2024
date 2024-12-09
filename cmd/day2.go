@@ -4,11 +4,8 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"bufio"
+	"advent2024/cmd/day2"
 	"fmt"
-	"os"
-	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -26,74 +23,12 @@ How many reports are safe?`,
 		if len(args) > 0 {
 			sourceDataFile = args[0]
 		}
-		readFile, err := os.Open(sourceDataFile)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fileScanner := bufio.NewScanner(readFile)
-		fileScanner.Split(bufio.ScanLines)
-		records := [][]int{}
-		for fileScanner.Scan() {
-			vals := strings.Fields(fileScanner.Text())
-			record := []int{}
-			for i := 0; i < len(vals); i++ {
-				val, err := strconv.ParseInt(vals[i], 10, 64)
-				if err != nil {
-					fmt.Println("Error parsing input")
-					os.Exit(1)
-				}
-				record = append(record, int(val))
-			}
-			records = append(records, record)
-		}
+		records := day2.LoadFile(sourceDataFile)
 
-		safeCount := 0
-		safeWithDampenerCount := 0
-		for i := 0; i < len(records); i++ {
-			record := records[i]
-			if isSafe(record) {
-				// fmt.Println(record)
-				safeCount++
-			} else {
-				for j := 0; j < len(record); j++ {
-					if isSafe(remove(record, j)) {
-						safeWithDampenerCount++
-						break
-					}
-				}
-			}
-
-		}
+		safeCount, safeWithDampenerCount := day2.CountSafeRecords(records)
 		fmt.Printf("Safe count: %d\n", safeCount)
 		fmt.Printf("Safe with dampener count: %d\n", safeCount+safeWithDampenerCount)
 	},
-}
-
-func remove(slice []int, s int) []int {
-	removed := append([]int{}, slice...)
-	removed = append(removed[:s], removed[s+1:]...)
-	// fmt.Println(s)
-	// fmt.Println(slice)
-	// fmt.Println(removed)
-	return removed
-}
-
-func isSafe(record []int) bool {
-	lastVal := record[0]
-	lastDiff := 0
-	for j := 1; j < len(record); j++ {
-		thisVal := record[j]
-		thisDiff := lastVal - thisVal
-		if thisDiff*lastDiff < 0 {
-			return false
-		}
-		if thisDiff > 3 || thisDiff < -3 || thisDiff == 0 {
-			return false
-		}
-		lastDiff = thisDiff
-		lastVal = thisVal
-	}
-	return true
 }
 
 func init() {

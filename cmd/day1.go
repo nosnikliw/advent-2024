@@ -4,12 +4,9 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"bufio"
+	"advent2024/cmd/day1"
 	"fmt"
-	"os"
 	"sort"
-	"strconv"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -27,53 +24,16 @@ Find the distance between two lists`,
 		if len(args) > 0 {
 			sourceDataFile = args[0]
 		}
-		readFile, err := os.Open(sourceDataFile)
-		if err != nil {
-			fmt.Println(err)
-		}
-		fileScanner := bufio.NewScanner(readFile)
-		fileScanner.Split(bufio.ScanLines)
-		list1 := []int{}
-		list2 := []int{}
-		for fileScanner.Scan() {
-			vals := strings.Fields(fileScanner.Text())
-			val1, err1 := strconv.ParseInt(vals[0], 10, 64)
-			if err1 != nil {
-				fmt.Println("Error parsing input")
-				os.Exit(1)
-			}
-			list1 = append(list1, int(val1))
-			val2, err2 := strconv.ParseInt(vals[1], 10, 64)
-			if err2 != nil {
-				fmt.Println("Error parsing input")
-				os.Exit(1)
-			}
-			list2 = append(list2, int(val2))
-		}
-		readFile.Close()
+
+		list1, list2 := day1.LoadFile(sourceDataFile)
 
 		sort.Ints(list1)
 		sort.Ints(list2)
-		distance := 0
-		for i := 0; i < len(list1); i++ {
-			d := list1[i] - list2[i]
-			if d < 0 {
-				distance = distance - d
-			} else {
-				distance = distance + d
-			}
-		}
+
+		distance := day1.CalculateDistance(list1, list2)
 		fmt.Printf("Distance: %d\n", distance)
-		similarity := 0
-		cursor := 0
-		for i := 0; i < len(list1); i++ {
-			val := list1[i]
-			for ; len(list2) > cursor && val > list2[cursor]; cursor++ {
-			}
-			for ; len(list2) > cursor && val == list2[cursor]; cursor++ {
-				similarity = similarity + val
-			}
-		}
+
+		similarity := day1.CalculateSimilarity(list1, list2)
 		fmt.Printf("Similarity: %d\n", similarity)
 	},
 }
