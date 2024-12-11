@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"advent2024/cmd/geometry"
 	"bufio"
 	"fmt"
 	"os"
@@ -30,11 +31,11 @@ Resonant Collinearity`,
 
 		nodeLists := buildNodeLists(grid)
 
-		boundary := VectorSquare{
-			v1: Vector{0, 0},
-			v2: Vector{x: (len(grid) - 1), y: (len(grid[0]) - 1)},
+		boundary := geometry.VectorBox{
+			V1: geometry.Vector{X: 0, Y: 0},
+			V2: geometry.Vector{X: (len(grid) - 1), Y: (len(grid[0]) - 1)},
 		}
-		lines := []Line{}
+		lines := []geometry.Line{}
 		antinodes := make([][]int, len(grid))
 		for i := range antinodes {
 			antinodes[i] = make([]int, len(grid[i]))
@@ -43,13 +44,13 @@ Resonant Collinearity`,
 			for i := 0; (i - 1) < len(network); i++ {
 				for j := i + 1; j < len(network); j++ {
 					ans := getAntinodes(network[i], network[j])
-					lines = append(lines, Line{
-						p1: network[i],
-						p2: network[j],
+					lines = append(lines, geometry.Line{
+						P1: network[i],
+						P2: network[j],
 					})
 					for _, v := range ans {
-						if boundary.contains(v) {
-							antinodes[v.x][v.y] = 1
+						if boundary.Contains(v) {
+							antinodes[v.X][v.Y] = 1
 						}
 					}
 				}
@@ -69,14 +70,14 @@ Resonant Collinearity`,
 		for i := 0; i < len(grid); i++ {
 			for j := 0; j < len(grid[i]); j++ {
 				for _, l := range lines {
-					v := Vector{i, j}
-					if v.equals(l.p1) || v.equals(l.p2) {
+					v := geometry.Vector{X: i, Y: j}
+					if v.Equals(l.P1) || v.Equals(l.P2) {
 						count2++
 						break
 					}
-					v1 := l.p1.vectorTo(l.p2)
-					v2 := l.p1.vectorTo(Vector{i, j})
-					if v1.isParallelTo(v2) {
+					v1 := l.P1.To(l.P2)
+					v2 := l.P1.To(geometry.Vector{X: i, Y: j})
+					if v1.IsParallelTo(v2) {
 						count2++
 						break
 					}
@@ -88,64 +89,19 @@ Resonant Collinearity`,
 	},
 }
 
-func getAntinodes(a Vector, b Vector) (antinodes []Vector) {
-	atob := a.vectorTo(b)
-	antinodes = append(antinodes, a.subtract(atob))
-	antinodes = append(antinodes, b.add(atob))
+func getAntinodes(a geometry.Vector, b geometry.Vector) (antinodes []geometry.Vector) {
+	atob := a.To(b)
+	antinodes = append(antinodes, a.Subtract(atob))
+	antinodes = append(antinodes, b.Add(atob))
 	return
 }
 
-type Line struct {
-	p1 Vector
-	p2 Vector
-}
-
-type VectorSquare struct {
-	v1 Vector
-	v2 Vector
-}
-
-func (s VectorSquare) contains(v Vector) bool {
-	return ((s.v1.x-v.x)*(s.v2.x-v.x) <= 0) && ((s.v1.y-v.y)*(s.v2.y-v.y) <= 0)
-}
-
-type Vector struct {
-	x int
-	y int
-}
-
-func (dv1 Vector) isParallelTo(dv2 Vector) bool {
-	return float64(dv1.x)/float64(dv1.y) == float64(dv2.x)/float64(dv2.y)
-}
-
-func (from Vector) vectorTo(to Vector) Vector {
-	return to.subtract(from)
-}
-
-func (a Vector) add(b Vector) Vector {
-	return Vector{
-		x: a.x + b.x,
-		y: a.y + b.y,
-	}
-}
-
-func (a Vector) subtract(b Vector) Vector {
-	return Vector{
-		x: a.x - b.x,
-		y: a.y - b.y,
-	}
-}
-
-func (a Vector) equals(b Vector) bool {
-	return a.x == b.x && a.y == b.y
-}
-
-func buildNodeLists(grid [][]string) (result map[string][]Vector) {
-	result = map[string][]Vector{}
-	for i, _ := range grid {
+func buildNodeLists(grid [][]string) (result map[string][]geometry.Vector) {
+	result = map[string][]geometry.Vector{}
+	for i := range grid {
 		for j, v := range grid[i] {
 			if v != "." {
-				result[v] = append(result[v], Vector{x: i, y: j})
+				result[v] = append(result[v], geometry.Vector{X: i, Y: j})
 			}
 		}
 	}
