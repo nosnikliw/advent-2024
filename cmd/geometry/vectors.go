@@ -27,6 +27,13 @@ func (from Vector) To(to Vector) Vector {
 	return to.Subtract(from)
 }
 
+func (a Vector) Scale(factor int) Vector {
+	return Vector{
+		X: a.X * factor,
+		Y: a.Y * factor,
+	}
+}
+
 func (a Vector) Add(b Vector) Vector {
 	return Vector{
 		X: a.X + b.X,
